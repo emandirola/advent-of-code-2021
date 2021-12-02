@@ -20,6 +20,7 @@ countAscendingWindow window =
 
 day01 :: IO ()
 day01 = do
+  print "Day 01"
   numbers <- map read . lines <$> readFile "input/day01.txt"
   print $ countAscendingNumbers numbers
   print $ countAscendingWindow 3 numbers
