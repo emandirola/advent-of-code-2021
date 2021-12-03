@@ -1,20 +1,26 @@
 module Day02.Day02 where
 
-import Data.List
+import Data.List (elemIndex)
 import Data.Maybe
-import Data.Bifunctor (bimap)
 
 type Movement = (Int, Int)
 
-move1 :: [String] -> Movement
-move1 = foldr1 (\x y -> bimap (fst x +) (snd x +) y) . map parse
+part1 :: [String] -> Movement
+part1 = foldr1 add . map parse
+  where
+    add (x, y) (dx, dy) = (,) (x + dx) (y + dy)
 
---move2 :: [String] -> Movement
-move2 = foldl1 (\x y ->
-    let a = fst x + fst y
-        b = snd x + (snd y * if snd y == 0 then 0 else fst x)
-    in (a, b)
-  ) . map parse
+moveDepth :: (Int, Int, Int) -> Movement -> (Int, Int, Int)
+moveDepth (x1, y1, a1) (dx, da) = (x2, y2, a2)
+  where
+    x2 = x1 + dx
+    y2 = if dx == 0 then y1 else y1 + (a2 * dx)
+    a2 = a1 + da
+
+part2 :: [String] -> Movement
+part2 = finish <$> foldl moveDepth (0, 0, 0) . map parse
+  where
+    finish (x, y, _) = (x, y)
 
 parse :: String -> Movement
 parse action
@@ -32,8 +38,8 @@ parse action
 day02 :: IO ()
 day02 = do
   print "Day 02"
-  input <- take 3 . lines <$> readFile "input/day02.txt"
-  print $ uncurry (*) (move1 input)
-  print $ map parse input
-  print $ move2 input
-  --print $ uncurry (*) (move2 input)
+  input <- lines <$> readFile "input/day02.txt"
+  print "Part 1"
+  print $ uncurry (*) (part1 input)
+  print "Part 2"
+  print $ uncurry (*) (part2 input)
