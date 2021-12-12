@@ -1,7 +1,3 @@
-{- LANGUAGE DeriveFunctor -}
-
-{-# LANGUAGE DeriveFunctor #-}
-
 module Day06.Day06 where
 
 import Data.List (foldl', sort, group)
@@ -11,10 +7,13 @@ data Fish a = Fish { days :: Int, amount :: a }
 instance Num a => Semigroup (Fish a) where
   (Fish d a1) <> (Fish _ a2) = Fish (d) (a1 + a2)
 
+makeFish :: [Int] -> Fish Int
+makeFish xs = Fish (head xs) (length xs)
+
 play :: Int -> [Int] -> Int
 play n fish = sum $ map amount $ foldl' go fish' [1..n]
   where
-    fish' = map (\x -> Fish (head x) (length x)) $ group $ sort fish
+    fish' = map makeFish $ group $ sort fish
     go fs _ = map (foldr1 (<>)) $ groupAllWith days $ concatMap go' fs
     go' (Fish d a) = if d > 0 then [Fish (d-1) a] else [Fish 6 a, Fish 8 a]
 
