@@ -34,5 +34,7 @@ part01 xs = minimum [go s xs | s <- spread']
 day07 :: IO ()
 day07 = do
   input <- read <$> (\x -> "[" ++ x ++ "]") <$> readFile "input/day07.txt" :: IO [Int]
+  putStrLn "Day 07"
+  putStrLn "Part 01"
   putStrLn $ show $ part01 $ sort input
   return ()
