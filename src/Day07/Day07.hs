@@ -2,22 +2,11 @@
 
 module Day07.Day07 where
 
-import Data.List (sort, sortBy)
-
-linearRegression :: [Double] -> [Double] -> Double
-linearRegression xs ys = mean ys + variance xs ys / variance xs xs * (0 - mean xs)
-  where
-    n = fromIntegral $ length xs
-    variance :: [Double] -> [Double] -> Double
-    variance xs' ys' = ((mean xs'2) * (mean ys'2)) - ((mean xs ** 2) * (mean ys ** 2))
-      where
-        xs'2 = map (**2) xs'
-        ys'2 = map (**2) ys'
-    mean :: [Double] -> Double
-    mean xs' = sum xs' / n
+import Data.List (sort, sortBy, findIndex)
+import Data.Maybe (fromJust)
 
 spread :: [Int] -> [Int]
-spread xs = [x | x <- sortBy dmean [(mean - minds)..(mean + minds)]]
+spread xs = sortBy dmean [(mean - minds)..(mean + minds)]
   where
     min' = minimum xs
     max' = maximum xs
@@ -28,13 +17,30 @@ spread xs = [x | x <- sortBy dmean [(mean - minds)..(mean + minds)]]
 part01 :: [Int] -> Int
 part01 xs = minimum [go s xs | s <- spread']
   where
-    go s xs' = sum $ map (abs . (s-)) xs'
+    go s xs' = sum $ map (abs . subtract s) xs'
     spread' = spread xs
+
+p :: Int -> Int
+p = (map p' [1..] !!)
+  where
+    p' n = n * (n-1) `div` 2
+
+part02 :: [Int] -> Int
+part02 xs = go mean xs
+  where
+    mean = sum xs `div` length xs
+    go s = sum . map (diff s)
+    diff x y = p $ abs $ subtract x y
+
+input :: IO [Int]
+input = read <$> (\x -> "[" ++ x ++ "]") <$> readFile "input/day07.example.txt" :: IO [Int]
 
 day07 :: IO ()
 day07 = do
-  input <- read <$> (\x -> "[" ++ x ++ "]") <$> readFile "input/day07.txt" :: IO [Int]
+  input' <- input
   putStrLn "Day 07"
   putStrLn "Part 01"
-  putStrLn $ show $ part01 $ sort input
+  putStrLn $ show $ part01 $ sort input'
+  putStrLn "Part 02"
+  putStrLn $ show $ part02 $ sort input'
   return ()
