@@ -24,6 +24,7 @@ dependencies:
 - hspec
 - combinatorial
 - containers
+- text
 
 library:
   source-dirs: src
