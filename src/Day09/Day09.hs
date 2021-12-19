@@ -3,14 +3,18 @@
 
 module Day09.Day09 where
 
+import Data.List (sort)
+
 type Board = [Cell]
 type Position = (Int, Int)
 type Positions = [Position]
 type Cells = [Cell]
-data Cell = Cell Position Int Positions deriving (Show, Eq)
+data Cell = Cell Position Int Positions deriving (Show)
+instance Eq Cell where
+  (Cell p1 _ _) == (Cell p2 _ _) = p1 == p2
 
 input :: IO [[Int]]
-input = map (map ((subtract (fromEnum '0')) . fromEnum)) . lines <$> readFile "input/Day09.example.txt"
+input = map (map ((subtract (fromEnum '0')) . fromEnum)) . lines <$> readFile "input/Day09.txt"
 
 buildBoard :: [[Int]] -> Board
 buildBoard xss = board
@@ -33,16 +37,37 @@ adjacent maxx maxy x y = filter (\(x', y') -> x' >= 0 && x' < maxx && y' >= 0 &&
     (x + 1, y)
   ]
 
-part01 :: Board -> Int
-part01 board = sum $ map ((+1) . (\(Cell _ n _) -> n)) $ board'
+lowPoints :: [Cell] -> [Cell]
+lowPoints board = filter (\(Cell _ n cs) -> all (\(Cell _ n' _) -> n < n') $ map lookupCell' cs) board
   where
     lookupCell' = lookupCell board
-    board' = filter (\(Cell _ n cs) -> all (\(Cell _ n' _) -> n < n') $ map lookupCell' cs) board
+
+part01 :: Board -> Int
+part01 board = sum $ map ((+1) . (\(Cell _ n _) -> n)) $ lowPoints board
 
 part02 :: Board -> Int
-part02 = undefined
+part02 board = product $ take 3 $ reverse $ sort $ map (length . map ((\(Cell _ p _) -> p) . lookupCell') . \p -> basin [p] []) lp
+  where
+    lookupCell' = lookupCell board
+    lp = map (\(Cell p _ _) -> p) $ lowPoints board
+    basin queue visited =
+      if null queue
+      then visited
+      else
+        let
+          next = head queue
+          (Cell p _ cs) = lookupCell' next
+          adjs = map lookupCell' cs
+          nexts = filter (\p' -> p' `notElem` visited) $ filter (\p' -> p' `notElem` queue) $ map (\(Cell p' _ _) -> p') $ filter (\(Cell _ n _) -> n /= 9) adjs
+        in
+          basin (tail queue ++ nexts) (visited ++ [p])
 
 day09 :: IO ()
 day09 = do
   board <- buildBoard <$> input
+  putStrLn "Day 09"
+  board `seq` putStrLn "Board"
+  putStrLn "Part 01"
   putStrLn $ show $ part01 board
+  putStrLn "Part 02"
+  putStrLn $ show $ part02 board
