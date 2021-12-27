@@ -3,7 +3,8 @@
 
 module Day09.Day09 where
 
-import Data.List (sort)
+import Data.List (sort, nub)
+import System.TimeIt (timeItNamed)
 
 type Board = [Cell]
 type Position = (Int, Int)
@@ -25,6 +26,35 @@ buildBoard xss = board
         \(p, n) -> Cell p n (uncurry adj p)
       ) numbered
     adj = adjacent (length $ head xss) (length xss)
+
+buildBoard' :: [[Int]] -> [Int]
+buildBoard' = concat
+
+part01' :: [[Int]] -> Int
+part01' !xs = go
+  where
+    sizex = length $ head xs
+    sizey = length xs
+    go = go' [0..sizex * sizey - 1] [] [] $ concat xs
+    go' !queue !checked !lower !ys =
+      if null queue then sum $ map (+1) $ map (ys!!) lower
+      else let
+        next = head queue
+        next' = ys !! next
+        neighbors' = neighbors sizex sizey next
+        isLower = all (> next') $ map (ys !!) neighbors'
+        lower' = if isLower then next:lower else lower
+        checked' = next:checked
+        queue' = tail queue
+      in go' queue' checked' lower' ys
+
+
+neighbors :: Int -> Int -> Int -> [Int]
+neighbors sizex sizey i = map (\(x', y') -> x' + sizex * y') $
+  filter (\(x', y') -> x' >= 0 && y' >= 0 && x' < sizex && y' < sizey)
+  [(x-1, y), (x+1, y), (x, y-1), (x, y+1)]
+    where
+      (x, y) = (i `mod` sizex, i `div` sizex)
 
 lookupCell :: Board -> Position -> Cell
 lookupCell board pos = filter (\(Cell p _ _) -> p == pos) board !! 0
@@ -64,10 +94,11 @@ part02 board = product $ take 3 $ reverse $ sort $ map (length . map ((\(Cell _ 
 
 day09 :: IO ()
 day09 = do
-  board <- buildBoard <$> input
+  board <- input
   putStrLn "Day 09"
   board `seq` putStrLn "Board"
   putStrLn "Part 01"
-  putStrLn $ show $ part01 board
+  timeItNamed "part 01" $ putStrLn $ show $ part01' board
+  --timeItNamed "part 01" $ putStrLn $ show $ part01 $ buildBoard board
   putStrLn "Part 02"
-  putStrLn $ show $ part02 board
+  --timeItNamed "part 02" $ putStrLn $ show $ part02 board
