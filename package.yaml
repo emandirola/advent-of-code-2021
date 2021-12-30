@@ -27,6 +27,7 @@ dependencies:
 - text
 - matrix
 - timeit
+- vector
 
 library:
   source-dirs: src

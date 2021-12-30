@@ -11,6 +11,7 @@ import Day08.Day08
 import Day09.Day09
 import Day10.Day10
 import Day11.Day11
+import Day12.Day12
 import System.IO (hFlush, stdout)
 import System.TimeIt (timeItNamed)
   
@@ -19,5 +20,5 @@ main = do
   putStr "Day: "
   hFlush stdout
   day <- readLn
-  _ <- timeItNamed ("Time Day " ++ show day) $ [day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11] !! (day - 1)
+  _ <- timeItNamed ("Time Day " ++ show day) $ [day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12] !! (day - 1)
   putStrLn "Hello World"
