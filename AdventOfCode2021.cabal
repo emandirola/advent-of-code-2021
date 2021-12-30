@@ -37,6 +37,7 @@ library
       Day10.Day10
       Day11.Day11
       Day12.Day12
+      Day13.Day13
   other-modules:
       Paths_AdventOfCode2021
   hs-source-dirs:
@@ -45,6 +46,7 @@ library
       base >=4.7 && <5
     , combinatorial
     , containers
+    , extra
     , hspec
     , matrix
     , text
@@ -64,6 +66,7 @@ executable AdventOfCode2021-exe
     , base >=4.7 && <5
     , combinatorial
     , containers
+    , extra
     , hspec
     , matrix
     , text
@@ -88,6 +91,7 @@ test-suite AdventOfCode2021-test
     , base >=4.7 && <5
     , combinatorial
     , containers
+    , extra
     , hspec
     , matrix
     , text
