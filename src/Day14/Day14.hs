@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TupleSections #-}
 
@@ -28,12 +27,12 @@ parseInput input = (template, rules)
 insert :: Int -> Template -> Rules -> Int
 insert n ts rs = last bySize - head bySize
   where
-    bySize = sort $ map (foldl1 (+) . fmap snd) $ groupAllWith fst $ map (first fst) res
+    bySize = sort $ map (sum . fmap snd) $ groupAllWith fst $ map (first fst) res
     res = iterate replace ts' !! n
-    ts' = merge $ map ((,1)) $ zip (ts ++ " ") (tail ts ++ " ")
+    ts' = merge $ zipWith (curry (,1)) (ts ++ " ") (tail ts ++ " ")
     merge = map (foldr1 (!<>)) . groupAllWith fst
     replace template = merge $ foldl' replace' [] template
-    replace' acc ps@((p@(a, b), n')) = acc ++ maybe [ps] (\r' -> [((a, r'), n'), ((r', b), n')]) (p `lookup` rs)
+    replace' acc ps@(p@(a, b), n') = acc ++ maybe [ps] (\r' -> [((a, r'), n'), ((r', b), n')]) (p `lookup` rs)
 
 part01 :: Template -> Rules -> Int
 part01 = insert 10
@@ -46,6 +45,6 @@ day14 = do
   (template, rules) <- parseInput . lines <$> readFile "input/day14.txt"
   putStrLn "Day 14"
   putStrLn "Part 1"
-  putStrLn $ show $ part01 template rules
+  print (part01 template rules)
   putStrLn "Part 2"
-  putStrLn $ show $ part02 template rules
+  print (part02 template rules)
